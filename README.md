@@ -1,21 +1,23 @@
-IB Gateway
-===
+# IB Gateway
 
-Creates a completely self-contained Docker container of IB Gateway. Exposes a VNC service on port 5900 and 4001/4002 for the IB API.
+A Docker container to run the Interactive Brokers IB Gateway on a remote 
+server. Exposes port 4001 and 4002 for the paper and live trading accounts.
 
-Usage
----
+## Usage
 
-1. `git clone git@github.com:renatovotto/docker-ibgateway.git`
-1. `cd docker-ibgateway`
-1. Configure IB Gateway on a local system.
-   - Copy `jts.ini` to the cloned repository folder.
-   - Copy `ibg.xml` from your profile folder into the cloned repository folder (it's inside the very long folder name). This contains your account settings (like enabling/disabling read-only mode).
-1. Edit `Dockerfile` and change the `PROFILE` variable to the name of your profile.
-1. Edit the VNC password in `Dockerfile` if needed.
-1. `docker build -t ibgateway .`
-1. `docker run -d --rm --name ibgateway -e ARGS="username=IB_USERNAME password=IB_PASSWORD" -p 5900:5900 -p 4001:4001 -p 4002:4002 ibgateway`
-
-If paper trading, a 'return' keystroke will be sent after 15s to skip the warning dialog.
-
+1. Clone the repository `git clone git@github.com:renatovotto/docker-ibgateway.
+   git`
+2. Go to the repository folder `cd docker-ibgateway`
+3. Configure the IB Gateway settings on a local system.
+4. Head to the "Jts" folder of your local installation
+5. Copy the `jts.ini` file into the repository folder
+6. Copy the `ibg.xml` file. It's inside one of the 2 folders with a very long
+   and cryptic name. One is for the paper and the other for the live 
+   trading account settings
+7. Edit the `Dockerfile` and changing the `IB_SETTINGS_FOLDER` variable to the
+   name of your settings folder name.
+8. Build the image with by running `docker buildx build -t ib_gateway .`
+9. Run the IB Gateway by running `docker run -d --rm -e
+   ARGS="username=IB_USERNAME password=IB_PASSWORD" -p 4001:4001 -p 4002:4002 
+   ib_gateway`
 ---

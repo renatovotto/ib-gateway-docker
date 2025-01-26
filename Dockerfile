@@ -1,48 +1,52 @@
-FROM ubuntu:18.04
-MAINTAINER Ryan Clouser (me@ryanclouser.com)
+FROM ubuntu:20.04
+LABEL maintainer="Renato Votto"
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV USER docker
-ENV DISPLAY :0
-ENV ARGS ""
-ENV PASSWORD "a"
-ENV PROFILE ""
-ENV VERSION "latest"
+# Environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV USER=docker
+ENV DISPLAY=host.docker.internal:0
+ENV LIBGL_ALWAYS_INDIRECT=1
+ENV IB_GATEWAY_VERSION="stable"
+# 'p' for paper, 'l' for live trading
+ENV ARGS=""
+ENV TRADING_MODE="p"
+ENV IB_SETTINGS_FOLDER="dnmgnekbphpinjnnbffkfboecmbocgiehfmomfne"
 
-USER root
-
-# Create docker user
+# Create docker user and set working directory
 RUN useradd -ms /bin/bash docker
 WORKDIR /home/docker
 
-# Update
-RUN apt update && apt upgrade -qy && apt dist-upgrade -qy
-RUN apt install wget ca-certificates tightvncserver fluxbox xterm xautomation -qy
-RUN apt clean
-RUN rm -rf /var/lib/apt/lists/*
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    wget ca-certificates xauth x11-utils libx11-6 mesa-utils libgl1-mesa-glx \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
 
-# IB Gateway
+# IB Gateway installation
 USER docker
-RUN wget -q https://download2.interactivebrokers.com/installers/ibgateway/$VERSION-standalone/ibgateway-$VERSION-standalone-linux-x64.sh
-RUN chmod +x ibgateway-$VERSION-standalone-linux-x64.sh && ./ibgateway-$VERSION-standalone-linux-x64.sh -q && rm -f ibgateway-$VERSION-standalone-linux-x64.sh
+RUN wget -q https://download2.interactivebrokers.com/installers/ibgateway/$IB_GATEWAY_VERSION-standalone/ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh \
+ && chmod +x ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh \
+ && ./ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh -q \
+ && rm -f ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh
 
-# Copy profile settings
 USER root
-COPY jts.ini /home/$USER/Jts/
-RUN mkdir /home/$USER/Jts/$PROFILE
-COPY ibg.xml /home/$USER/Jts/$PROFILE/
-COPY start.sh /home/$USER/
-RUN chmod +x /home/$USER/start.sh
-RUN chown $USER:$USER /home/$USER/Jts/jts.ini; chown $USER:$USER /home/$USER/start.sh; chown -R $USER:$USER /home/$USER/Jts/$PROFILE
 
-# VNC
+# Copy configuration files
+COPY jts.ini Jts/
+COPY ibg.xml Jts/$IB_SETTINGS_FOLDER/
+COPY start.sh .
+
+# Assign permissions and ownerships to the user
+RUN chmod +x start.sh \
+ && chown $USER:$USER Jts/jts.ini \
+ && chown -R $USER:$USER Jts/$IB_SETTINGS_FOLDER \
+ && chown $USER:$USER start.sh
+
 USER docker
-RUN mkdir -p /home/$USER/.vnc
-RUN set -xe && (echo $PASSWORD | vncpasswd -f > /home/$USER/.vnc/passwd)
-RUN chmod 0600 /home/$USER/.vnc/passwd
 
-EXPOSE 7496
-EXPOSE 7497
-EXPOSE 5900
+# Expose API ports
+EXPOSE 4001
+EXPOSE 4002
 
-CMD tightvncserver $DISPLAY; ./start.sh
+# Start IB Gateway
+CMD ["./start.sh"]
