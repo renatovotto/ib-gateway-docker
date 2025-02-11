@@ -18,6 +18,6 @@ server. Exposes port 4001 and 4002 for the paper and live trading accounts.
    name of your settings folder name.
 8. Build the image with by running `docker buildx build -t ib_gateway .`
 9. Run the IB Gateway by running `docker run -d --rm -e
-   ARGS="username=IB_USERNAME password=IB_PASSWORD" -p 4001:4001 -p 4002:4002 
+   username=IB_USERNAME password=IB_PASSWORD -p 4001:4001 -p 4002:4002 
    ib_gateway`
 ---

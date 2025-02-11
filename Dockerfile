@@ -8,7 +8,6 @@ ENV DISPLAY=host.docker.internal:0
 ENV LIBGL_ALWAYS_INDIRECT=1
 ENV IB_GATEWAY_VERSION="stable"
 # 'p' for paper, 'l' for live trading
-ENV ARGS=""
 ENV TRADING_MODE="p"
 ENV IB_SETTINGS_FOLDER="dnmgnekbphpinjnnbffkfboecmbocgiehfmomfne"
 
