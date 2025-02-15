@@ -1,6 +1,6 @@
 # IB Gateway
 
-A Docker container to facilitate the launching and running the Interactive 
+A Docker container to facilitate launching and running the Interactive 
 Brokers IB Gateway on a remote server.
 
 ### Features
