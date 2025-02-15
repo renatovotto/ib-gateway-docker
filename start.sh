@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Confirm TRADING_MODE environment variable (default is "p")
+TRADING_MODE="${m:-p}"
+
 # Set `tradingMode` in jts.ini based on the `TRADING_MODE` environment
 # variable
 if [ "$TRADING_MODE" == "l" ]; then
@@ -11,7 +14,13 @@ else
 fi
 
 # Launch IB Gateway with any provided arguments
-ibgateway/ibgateway username="$username" password="$password" &
+ibgateway/ibgateway username="$u" password="$p" &
+
+# Acceot the "Paper Trading Account" warning
+if [ "$TRADING_MODE" == "p" ]; then
+    sleep 30
+    xdotool key 'Return'
+fi
 
 # Capture the PID of the IB Gateway process
 GATEWAY_PID=$!

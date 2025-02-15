@@ -6,4 +6,6 @@ gen
 
 # IB Gateway settings
 jts.ini
-ibg.xml
+l.xml
+p.xml
+*.xml
