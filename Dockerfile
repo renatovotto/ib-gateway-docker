@@ -41,6 +41,7 @@ COPY start.sh .
 # Assign permissions and ownerships to the user
 RUN chmod +x start.sh \
  && chown $USER:$USER Jts/jts.ini \
+ && chown -R $USER:$USER Jts/$LIVE_TRADING_SETTINGS_FOLDER \
  && chown -R $USER:$USER Jts/$PAPER_TRADING_SETTINGS_FOLDER \
  && chown $USER:$USER start.sh
 
