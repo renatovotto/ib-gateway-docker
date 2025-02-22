@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Set the display, default mode is headless using xvfb
+case "$d" in
+    ""|h)
+        # Instantiate a virtual framebuffer
+        Xvfb "$DISPLAY" -screen 0 1920x1080x24 &
+        ;;
+    d)
+        # Default display
+        DISPLAY=host.docker.internal:0
+        ;;
+    *)
+        # Any user defined display
+        DISPLAY="$d"
+esac
+
 # Confirm TRADING_MODE environment variable (default is "p")
 TRADING_MODE="${m:-p}"
 
@@ -16,14 +31,39 @@ fi
 # Launch IB Gateway with any provided arguments
 ibgateway/ibgateway username="$u" password="$p" &
 
-# Acceot the "Paper Trading Account" warning
-if [ "$TRADING_MODE" == "p" ]; then
-    sleep 30
-    xdotool key 'Return'
-fi
-
 # Capture the PID of the IB Gateway process
 GATEWAY_PID=$!
+
+# If paper trading mode, accept the the "Paper Trading Account" warning
+if [ "$TRADING_MODE" == "p" ]; then
+    sleep 15
+    xdotool key 'Return'
+
+# If live trading mode, wait until the 2FA completes
+else
+    # Wait for 2FA window to appear
+    echo "Waiting for 2FA window to appear..."
+    while ! xdotool search --name "Second Factor Authentication" &>/dev/null; do
+        sleep 3
+    done
+    echo "2FA window detected"
+
+    # Wait for 2FA process to complete and window to disappear
+    while xdotool search --name "Second Factor Authentication" &>/dev/null; do
+        echo "Waiting for Second Factor Authentication to complete..."
+        sleep 3
+    done
+    echo "2FA process completed"
+
+    window_id=$(xdotool search --name "IBKR Gateway" | head -n 1)
+    eval $(xdotool getwindowgeometry --shell "$window_id")
+    xdotool mousemove --window "$window_id" \
+        $(echo "$WIDTH * 0.56" | bc | cut -d. -f1) \
+        $(echo "$HEIGHT * 0.71" | bc | cut -d. -f1)
+    echo "Logging in"
+    sleep 5
+    xdotool click 1
+fi
 
 # Wait for the IB Gateway process to complete
 wait $GATEWAY_PID

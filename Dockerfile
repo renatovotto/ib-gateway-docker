@@ -4,7 +4,7 @@ LABEL maintainer="Renato Votto"
 # Environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=docker
-ENV DISPLAY=host.docker.internal:0
+ENV DISPLAY=":1"
 ENV LIBGL_ALWAYS_INDIRECT=1
 ENV IB_GATEWAY_VERSION="stable"
 # 'p' for paper, 'l' for live trading
@@ -18,8 +18,10 @@ WORKDIR /home/docker
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
-    wget ca-certificates xdotool xauth x11-utils libx11-6 mesa-utils \
-    libgl1-mesa-glx \
+    wget ca-certificates \
+    bc xdotool \
+    xvfb \
+    xauth x11-utils libx11-6 mesa-utils libgl1-mesa-glx \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
