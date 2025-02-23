@@ -1,17 +1,18 @@
 #!/bin/bash
 
-# Set the display, default mode is headless using xvfb
+# Set the display
+# The default mode is headless, using ":1" virtual display with xvfb
 case "$d" in
     ""|h)
         # Instantiate a virtual framebuffer
         Xvfb "$DISPLAY" -screen 0 1920x1080x24 &
         ;;
     d)
-        # Default display
+        # Use the Docker host's display
         DISPLAY=host.docker.internal:0
         ;;
     *)
-        # Any user defined display
+        # Any user-defined display
         DISPLAY="$d"
 esac
 
