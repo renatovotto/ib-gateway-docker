@@ -51,10 +51,10 @@ else
 
     # Wait for 2FA process to complete and window to disappear
     while xdotool search --name "Second Factor Authentication" &>/dev/null; do
-        echo "Waiting for Second Factor Authentication to complete..."
+        echo "Waiting for 2FA to complete..."
         sleep 3
     done
-    echo "2FA process completed"
+    echo "2FA completed"
 
     window_id=$(xdotool search --name "IBKR Gateway" | head -n 1)
     eval $(xdotool getwindowgeometry --shell "$window_id")
