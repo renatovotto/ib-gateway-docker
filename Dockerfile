@@ -54,4 +54,4 @@ EXPOSE 4001
 EXPOSE 4002
 
 # Start IB Gateway
-CMD ["./start.sh"]
+ENTRYPOINT ["./start.sh"]

@@ -66,8 +66,5 @@ else
     xdotool click 1
 fi
 
-# Wait for the IB Gateway process to complete
-wait $GATEWAY_PID
-
 # Keep the container running to allow IB Gateway daily restart
 tail -f /dev/null
