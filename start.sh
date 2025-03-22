@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Clean up X server files to avoid conflicts whilst instantiating
+# the virtual framebuffer after a restart
+rm -f /tmp/.X*-lock /tmp/.X11-unix/X*
+
 # Set the display
 # The default mode is headless, using ":1" virtual display with xvfb
 case "$d" in
