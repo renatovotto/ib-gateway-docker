@@ -29,15 +29,15 @@ Brokers IB Gateway on a remote server.
 8. Launch the IB Gateway by running:
 
     `docker run -d --rm -e m=p -e u=ib_username -e p=ib_password
-    -e d=display_mode -p 4001:4001 -p 4002:4002 ib-gateway`
+    -e d=display_mode -p 127.0.0.1:4002:4002 ib-gateway`
    
    Where:
 
-   - m: Trading mode, can be either "l" for live trading or "p" for paper
+   - `m`: Trading mode, can be either "l" for live trading or "p" for paper
    trading
-   - d: Display mode:
-     - "" (omitted) or h: headless, use Xvfb with `DISPLAY=:1`
-     - d: use Docker host's display, `DISPLAY=host.docker.internal:0`
+   - `d`: Display mode:
+     - "" (omitted) or "h": headless, use Xvfb with `DISPLAY=:1`
+     - "d": use Docker host's display, `DISPLAY=host.docker.internal:0`
      - Any other value: custom DISPLAY, e.g., `127.0.0.1:10` or `host.name:7`
 
    The script will automatically set up the display mode based on `d`, either
