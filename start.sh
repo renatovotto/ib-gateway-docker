@@ -41,7 +41,21 @@ GATEWAY_PID=$!
 
 # If paper trading mode, accept the the "Paper Trading Account" warning
 if [ "$TRADING_MODE" == "p" ]; then
-    sleep 15
+    # Wait for the paper trading warning window to appear
+    echo "Waiting for paper trading warning to appear..."
+    while ! xdotool search --name "Warning" &>/dev/null; do
+        # Check for "Existing session detected" window
+        if xdotool search --name "Existing session detected" &>/dev/null; then
+            echo "Detected existing session. Logging in with this one..."
+            # Kick out other session
+            xdotool key 'Return'
+        fi
+        sleep 3
+    done
+    echo "Paper trading warning detected. Pressing Return to close it"
+    echo "Pressing Return to accept and close the paper trading warning..."
+    sleep 3
+    # Press the return key to accept and close the warning
     xdotool key 'Return'
 
 # If live trading mode, wait until the 2FA completes

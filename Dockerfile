@@ -19,8 +19,8 @@ WORKDIR /home/docker
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
     wget ca-certificates \
-    bc xdotool \
     xvfb \
+    bc xdotool \
     xauth x11-utils libx11-6 mesa-utils libgl1-mesa-glx \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
