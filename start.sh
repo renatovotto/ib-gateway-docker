@@ -20,9 +20,6 @@ case "$d" in
         DISPLAY="$d"
 esac
 
-# Confirm TRADING_MODE environment variable (default is "p")
-TRADING_MODE="${m:-p}"
-
 # Set `tradingMode` in jts.ini based on the `TRADING_MODE` environment
 # variable
 if [ "$TRADING_MODE" == "l" ]; then

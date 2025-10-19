@@ -23,19 +23,34 @@ Brokers IB Gateway on a remote server.
    Gateway in paper or live mode, enable the "show log" option, change one item
    in the settings, press apply, and read the name of the path where it is
    saving the settings, the long name should be there
-6. Edit the `Dockerfile` assigning the folder names to the `ENV` variables
-   `LIVE_TRADING_SETTINGS_FOLDER` and `PAPER_TRADING_SETTINGS_FOLDER`
-7. Build the Docker image by running `docker build -t ib-gateway .`
-8. Launch the IB Gateway by running:
+6. Build the Docker image by running:
+   
+   ```
+   docker build \
+      --build-arg TRADING_MODE=p \
+      --build-arg ACCOUNT_DIRECTORY=the_one_found_in_step_5 \
+      -t ib-gateway .
+   ```
+   IMPORTANT: all the containers created from the same image must be used with
+   the same account generating ACCOUNT_DIRECTORY, i.e. same username and
+   account type (live or paper). Otherwise, a login to a different account will
+   create a different folder which won't get the settings in `ibg.xml` and the
+   user permissions, breaking everything 
 
-    `docker run -d --rm -e m=p -e u=ib_username -e p=ib_password
-    -e d=display_mode -p 127.0.0.1:4002:4002 ib-gateway`
+7. Launch the IB Gateway by running:
+
+    ```
+   docker run -d --rm \
+     -e u=ib_username \
+     -e p=ib_password \
+     -e d=display_mode \
+     -p 127.0.0.1:4002:4002 \
+     ib-gateway
+   ```
    
    Where:
 
-   - `m`: Trading mode, can be either "l" for live trading or "p" for paper
-   trading
-   - `d`: Display mode:
+   - `d`: display mode, can be:
      - "" (omitted) or "h": headless, use Xvfb with `DISPLAY=:1`
      - "d": use Docker host's display, `DISPLAY=host.docker.internal:0`
      - Any other value: custom DISPLAY, e.g., `127.0.0.1:10` or `host.name:7`
