@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 LABEL maintainer="Renato Votto"
 
 # Environment variables
@@ -24,7 +24,7 @@ WORKDIR /home/docker
 
 # Install necessary packages
 RUN apt-get update && apt-get install -y \
-    wget ca-certificates \
+    wget ca-certificates fontconfig \
     xvfb \
     bc xdotool \
     xauth x11-utils libx11-6 mesa-utils libgl1-mesa-glx \
@@ -35,21 +35,16 @@ RUN apt-get update && apt-get install -y \
 USER docker
 RUN wget -q https://download2.interactivebrokers.com/installers/ibgateway/$IB_GATEWAY_VERSION-standalone/ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh \
  && chmod +x ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh \
- && ./ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh -q \
- && rm -f ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh
+ && env -u DISPLAY ./ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh -q -dir /home/docker/ibgateway \
+ && rm -f ibgateway-$IB_GATEWAY_VERSION-standalone-linux-x64.sh \
+ && test -x /home/docker/ibgateway/ibgateway
 
 USER root
 
-# Copy configuration files
-COPY jts.ini Jts/
-COPY ${TRADING_MODE}.xml Jts/$ACCOUNT_DIRECTORY/ibg.xml
-COPY start.sh .
-
-# Assign permissions and ownerships to the user
-RUN chmod +x start.sh \
- && chown $USER:$USER Jts/jts.ini \
- && chown -R $USER:$USER Jts/$ACCOUNT_DIRECTORY \
- && chown $USER:$USER start.sh
+# Copy configuration files with proper ownership and permissions
+COPY --chown=docker:docker jts.ini Jts/
+COPY --chown=docker:docker ${TRADING_MODE}.xml Jts/$ACCOUNT_DIRECTORY/ibg.xml
+COPY --chown=docker:docker --chmod=755 start.sh .
 
 USER docker
 
